@@ -143,7 +143,7 @@
   .badge-yes { background: #d1fae5; color: #065f46; }
   .badge-no { background: #fee2e2; color: #991b1b; }
   .badge-num { background: #dbeafe; color: #1e40af; }
-  .cell-text { max-width: 220px; white-space: pre-wrap; word-break: break-word; }
+  .cell-text { max-width: 260px; white-space: pre-wrap; word-break: break-word; }
   .empty-answer { color: #cbd5e1; font-style: italic; }
   .loading { text-align: center; padding: 30px; color: var(--muted); }
 </style>
@@ -200,13 +200,8 @@
       <textarea id="p3" placeholder="Describa aquí si requiere algún apoyo especial..."></textarea>
     </div>
 
-    <div class="question">
-      <p class="q-text">4. Cercanía y acompañamiento familiar: Como familia de Hope Christian Academy, ¿qué iniciativa o detalle por parte del colegio le haría sentir aún más respaldado e integrado en la formación de su hijo(a)?</p>
-      <textarea id="p4" placeholder="Comparta su idea o sugerencia..."></textarea>
-    </div>
-
     <button type="submit" class="btn" id="submitBtn">Enviar Encuesta</button>
-    <footer style="margin-top:16px;">Sus respuestas se guardan de forma segura y confidencial.</footer>
+    <footer style="margin-top:16px;">Sus respuestas quedarán registradas para dar seguimiento.</footer>
   </form>
 
   <div class="thankyou" id="thankyou">
@@ -242,12 +237,11 @@
         <thead>
           <tr>
             <th>#</th><th>Curso</th><th>Estudiante</th><th>Representante</th><th>Correo</th>
-            <th>P1</th><th>P2</th><th>Sugerencia P2</th><th>P3 — Ayuda</th>
-            <th>P4 — Iniciativa</th><th>Fecha</th>
+            <th>P1</th><th>P2</th><th>Sugerencia P2</th><th>P3 — Ayuda</th><th>Fecha</th>
           </tr>
         </thead>
         <tbody id="tbody">
-          <tr><td colspan="11" class="loading">Cargando datos...</td></tr>
+          <tr><td colspan="10" class="loading">Cargando datos...</td></tr>
         </tbody>
       </table>
     </div>
@@ -539,7 +533,6 @@ form.addEventListener("submit", async (e) => {
     p2_atencion: p2.value,
     p2_sugerencia: document.getElementById("p2_sugerencia").value.trim(),
     p3_ayuda: document.getElementById("p3").value.trim(),
-    p4_iniciativa: document.getElementById("p4").value.trim(),
     fecha: firebase.firestore.FieldValue.serverTimestamp()
   };
 
@@ -581,7 +574,7 @@ let datos = [];
 
 async function cargarDatos() {
   const tbody = document.getElementById("tbody");
-  tbody.innerHTML = '<tr><td colspan="11" class="loading">Cargando datos...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="10" class="loading">Cargando datos...</td></tr>';
   try {
     const snap = await db.collection("encuestas_hope").orderBy("fecha", "desc").get();
     datos = [];
@@ -591,7 +584,7 @@ async function cargarDatos() {
     renderTabla();
   } catch (err) {
     console.error(err);
-    tbody.innerHTML = `<tr><td colspan="11" class="loading" style="color:var(--danger);">Error: ${err.message}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="10" class="loading" style="color:var(--danger);">Error: ${err.message}</td></tr>`;
   }
 }
 
@@ -642,7 +635,7 @@ function renderTabla() {
   });
 
   if (filtrados.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="11" class="loading">No hay respuestas que coincidan.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10" class="loading">No hay respuestas que coincidan.</td></tr>';
     return;
   }
 
@@ -663,7 +656,6 @@ function renderTabla() {
       <td>${p2Badge}</td>
       <td class="cell-text">${esc(d.p2_sugerencia) || vacio}</td>
       <td class="cell-text">${esc(d.p3_ayuda) || vacio}</td>
-      <td class="cell-text">${esc(d.p4_iniciativa) || vacio}</td>
       <td>${fecha}</td>
     </tr>`;
   }).join("");
@@ -699,14 +691,13 @@ function descargarExcel() {
     "P2 Atención": d.p2_atencion || "",
     "P2 Sugerencia": d.p2_sugerencia || "",
     "P3 Ayuda solicitada": d.p3_ayuda || "",
-    "P4 Iniciativa sugerida": d.p4_iniciativa || "",
     "Fecha de envío": d.fecha?.toDate ? d.fecha.toDate().toLocaleString("es-EC") : ""
   }));
 
   const ws = XLSX.utils.json_to_sheet(filas);
   ws["!cols"] = [
     { wch: 5 }, { wch: 28 }, { wch: 34 }, { wch: 24 }, { wch: 34 },
-    { wch: 16 }, { wch: 14 }, { wch: 40 }, { wch: 40 }, { wch: 40 }, { wch: 22 }
+    { wch: 16 }, { wch: 14 }, { wch: 40 }, { wch: 40 }, { wch: 22 }
   ];
 
   const wb = XLSX.utils.book_new();

@@ -98,7 +98,6 @@
   .error-msg.show { display: block; }
   footer { text-align: center; font-size: 0.75rem; color: var(--muted); padding: 0 0 20px; }
 
-  /* ============ PANEL DE RESULTADOS (visible para todos) ============ */
   .results {
     padding: 30px;
     border-top: 4px solid var(--primary);
@@ -157,7 +156,6 @@
     <p>Su opinión nos ayuda a cuidar mejor de cada estudiante y su familia</p>
   </header>
 
-  <!-- ================= FORMULARIO PÚBLICO ================= -->
   <form id="surveyForm">
     <div class="error-msg" id="errorMsg"></div>
 
@@ -211,7 +209,6 @@
     <footer style="margin-top:16px;">Sus respuestas se guardan de forma segura y confidencial.</footer>
   </form>
 
-  <!-- ================= AGRADECIMIENTO ================= -->
   <div class="thankyou" id="thankyou">
     <div class="check">✓</div>
     <h2>¡Muchísimas gracias por su tiempo!</h2>
@@ -222,7 +219,6 @@
     <button class="btn" style="margin-top:24px; max-width:260px;" onclick="resetForm()">Responder otra encuesta</button>
   </div>
 
-  <!-- ================= PANEL DE RESULTADOS (visible para todos) ================= -->
   <div class="results">
     <h2>📊 Respuestas registradas</h2>
     <p class="sub">Todas las encuestas enviadas hasta el momento. Se actualizan al hacer clic en "Refrescar".</p>
@@ -261,25 +257,22 @@
 <!-- Firebase + SheetJS -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <script>
 /* ============================================================
-   1) CONFIGURACIÓN FIREBASE — REEMPLAZAR CON SUS DATOS
+   1) CONFIGURACIÓN FIREBASE — TUS DATOS REALES
    ============================================================ */
 const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "TU_PROYECTO.firebaseapp.com",
-  projectId: "TU_PROYECTO",
-  storageBucket: "TU_PROYECTO.appspot.com",
-  messagingSenderId: "TU_SENDER_ID",
-  appId: "TU_APP_ID"
+  apiKey: "AIzaSyCkh1AkBmRTkZ8UgBXtm8gTi9K61a3iBIs",
+  authDomain: "hope-academy-encuestas.firebaseapp.com",
+  projectId: "hope-academy-encuestas",
+  storageBucket: "hope-academy-encuestas.firebasestorage.app",
+  messagingSenderId: "534879933234",
+  appId: "1:534879933234:web:cfe679f006abac2dfefd2b"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-const auth = firebase.auth();
-auth.signInAnonymously().catch(err => console.warn("Auth anónimo:", err.message));
 
 /* ============================================================
    2) ORDEN PEDAGÓGICO DE CURSOS
@@ -482,7 +475,7 @@ const estudiantes = [
 ];
 
 /* ============================================================
-   4) FORMULARIO PÚBLICO
+   4) FORMULARIO
    ============================================================ */
 const cursoSel = document.getElementById("curso");
 const estudianteSel = document.getElementById("estudiante");
@@ -556,7 +549,7 @@ form.addEventListener("submit", async (e) => {
     form.style.display = "none";
     thankyou.classList.add("show");
     window.scrollTo({ top: 0, behavior: "smooth" });
-    cargarDatos(); // refresca la tabla automáticamente
+    cargarDatos();
   } catch (err) {
     console.error(err);
     mostrarError("Ocurrió un error al guardar. Intente nuevamente. " + err.message);
@@ -582,7 +575,7 @@ function resetForm() {
 }
 
 /* ============================================================
-   5) PANEL DE RESULTADOS (visible para todos)
+   5) PANEL DE RESULTADOS
    ============================================================ */
 let datos = [];
 
@@ -719,7 +712,6 @@ function descargarExcel() {
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Encuestas");
 
-  // Hoja resumen por curso
   const resumen = {};
   ordenados.forEach(d => {
     if (!resumen[d.curso]) resumen[d.curso] = { total: 0, sumaP1: 0, si: 0, no: 0 };
@@ -745,9 +737,6 @@ function descargarExcel() {
   XLSX.writeFile(wb, `Encuestas_Hope_Academy_${fecha}.xlsx`);
 }
 
-/* ============================================================
-   7) CARGAR DATOS AL ABRIR LA PÁGINA
-   ============================================================ */
 cargarDatos();
 </script>
 </body>
